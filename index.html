@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>QGMR v21: Quick Graphics from Mermaid Rendering</title>
+    <title>QGMR v22: Quick Graphics from Mermaid Rendering</title>
     <style>
 /* ===== BASE ===== */
 body {
@@ -5762,15 +5762,15 @@ globalThis["mermaid"] = globalThis.__esbuild_esm_mermaid_nm["mermaid"].default;
     <script>
         const STORAGE_KEY = "mermaid_liveviewer_text";
         const DARK_KEY = "mermaid_liveviewer_darkmode";
-        const HISTORY_STACK_KEY = "qgmr_v21_history_stack";
-        const HISTORY_INDEX_KEY = "qgmr_v21_history_index";
-        const SAVED_INDEX_KEY = "qgmr_v21_saved_index";
-        const LEGACY_HISTORY_STACK_KEYS = ["qgmr_v20_history_stack", "qgmr_v13_history_stack"];
-        const LEGACY_HISTORY_INDEX_KEYS = ["qgmr_v20_history_index", "qgmr_v13_history_index"];
-        const LEGACY_SAVED_INDEX_KEYS = ["qgmr_v20_saved_index", "qgmr_v13_saved_index"];
-        const WORKBOOK_META_KEY = "qgmr_v21_workbook_meta";
-        const CURRENT_DIAGRAM_META_KEY = "qgmr_v21_current_diagram_meta";
-        const STYLING_SETTINGS_KEY = "qgmr_v21_styling_settings";
+        const HISTORY_STACK_KEY = "qgmr_v22_history_stack";
+        const HISTORY_INDEX_KEY = "qgmr_v22_history_index";
+        const SAVED_INDEX_KEY = "qgmr_v22_saved_index";
+        const LEGACY_HISTORY_STACK_KEYS = ["qgmr_v21_history_stack", "qgmr_v13_history_stack"];
+        const LEGACY_HISTORY_INDEX_KEYS = ["qgmr_v21_history_index", "qgmr_v13_history_index"];
+        const LEGACY_SAVED_INDEX_KEYS = ["qgmr_v21_saved_index", "qgmr_v13_saved_index"];
+        const WORKBOOK_META_KEY = "qgmr_v22_workbook_meta";
+        const CURRENT_DIAGRAM_META_KEY = "qgmr_v22_current_diagram_meta";
+        const STYLING_SETTINGS_KEY = "qgmr_v22_styling_settings";
 
         const DEFAULT_STYLING_SETTINGS = Object.freeze({
             darkMode: false,
@@ -6700,14 +6700,48 @@ globalThis["mermaid"] = globalThis.__esbuild_esm_mermaid_nm["mermaid"].default;
         function copyError() {
             const preview = document.getElementById("mmdPreview");
             const errorText = preview.querySelector(".error");
-            if (errorText) {
-                navigator.clipboard.writeText(errorText.innerText).then(() => {
-                    const btn = document.getElementById("copyErrorBtn");
-                    const originalText = btn.textContent;
-                    btn.textContent = "Copied!";
-                    setTimeout(() => btn.textContent = originalText, 2000);
+            if (!errorText) return;
+
+            const textToCopy = errorText.innerText || errorText.textContent;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopySuccess();
+                }).catch(() => {
+                    fallbackCopyText(textToCopy);
                 });
+            } else {
+                fallbackCopyText(textToCopy);
             }
+        }
+
+        function fallbackCopyText(text) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";  // Avoid scrolling to bottom
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess();
+                } else {
+                    alert("Copy failed. Please manually note the error.");
+                }
+            } catch (err) {
+                alert("Copy not supported on this mobile view.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showCopySuccess() {
+            const btn = document.getElementById("copyErrorBtn");
+            if (!btn) return;
+            const originalText = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => btn.textContent = originalText, 2000);
         }
 
         function toggleRightPanel() {
@@ -8425,10 +8459,10 @@ style leap stroke:#6b46c1,stroke-width:2px
         }
 
         /* --- NEW: Diagram Menu Logic --- */
-        const SAVED_KEY = "qgmr_v21_saved";
+        const SAVED_KEY = "qgmr_v22_saved";
         const DEFAULT_WORKBOOK_SETTINGS = Object.freeze({
             title: "QGMR Workbook",
-            exportName: "QGMR_v21_workbook"
+            exportName: "QGMR_v22_workbook"
         });
         const DEFAULT_DIAGRAM_META = Object.freeze({
             title: "",
@@ -9689,7 +9723,7 @@ style leap stroke:#6b46c1,stroke-width:2px
             { chapter: "Chapter 4: Sidebar", target: "exportPNG", title: "Download PNG", desc: "Download your diagram as a PNG image. The background matches your current theme (light/dark).", position: "right" },
             { chapter: "Chapter 4: Sidebar", target: "copyPicBtn", title: "Copy Screenshot (📷)", desc: "Copy the visible display area to the clipboard as a PNG. Paste it into email, Teams, or Word. It uses your current pan and zoom: press <b>R</b> first to copy the whole diagram. The background matches light/dark mode. If the browser blocks the clipboard, the PNG downloads instead.", position: "right" },
             { chapter: "Chapter 4: Sidebar", target: "darkToggleBtn", title: "Dark Mode", desc: "Toggle between light and dark themes. Your preference is saved automatically. (Shortcut: press <b>M</b> when not typing).", position: "right" },
-            { chapter: "Chapter 4: Sidebar", target: "tourBtn", title: "Tour (This Button!)", desc: "Click anytime to restart this tour. Thanks for learning QGMR v21! 🎉", position: "right" }
+            { chapter: "Chapter 4: Sidebar", target: "tourBtn", title: "Tour (This Button!)", desc: "Click anytime to restart this tour. Thanks for learning QGMR v22! 🎉", position: "right" }
         ];
 
         let tourActive = false;
@@ -9730,7 +9764,7 @@ style leap stroke:#6b46c1,stroke-width:2px
             let html = `
                 <button class="metadata-close-btn" onclick="stopTour()" title="Close" style="position:absolute; top:12px; right:12px; font-size:20px; font-weight:normal;">✕</button>
                 <div style="text-align:center; margin-bottom:20px;">
-                    <div style="font-size:24px; font-weight:700; color:#000; margin-bottom:8px;">Welcome to QGMR v21 Tour</div>
+                    <div style="font-size:24px; font-weight:700; color:#000; margin-bottom:8px;">Welcome to QGMR v22 Tour</div>
                     <div style="font-size:14px; color:#666;">Choose a chapter to begin exploring:</div>
                 </div>
                 <div style="display:grid; gap:12px;">
@@ -10551,7 +10585,7 @@ style leap stroke:#6b46c1,stroke-width:2px
                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
             </button>
 
-            <div class="version-text" onclick="openVersionLog()" style="cursor:pointer;" title="View Version Log">v21</div>
+            <div class="version-text" onclick="openVersionLog()" style="cursor:pointer;" title="View Version Log">v22</div>
             <div style="height:5px"></div>
         </div>
         
@@ -10849,7 +10883,7 @@ style leap stroke:#6b46c1,stroke-width:2px
                 </label>
                 <label class="metadata-label">
                     Export Name
-                    <input id="workbookExportNameInput" class="metadata-input" type="text" placeholder="QGMR_v21_workbook">
+                    <input id="workbookExportNameInput" class="metadata-input" type="text" placeholder="QGMR_v22_workbook">
                 </label>
             </div>
 
@@ -10922,6 +10956,11 @@ style leap stroke:#6b46c1,stroke-width:2px
             
             <div class="metadata-section">
                 <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:15px; display:flex; flex-direction:column; gap:14px;">
+                    <li><strong>v22</strong>
+                        <ul style="margin-top:4px; padding-left:18px; font-size:14px;" class="version-sublist">
+                            <li>Fixing Mobile Copy Error Issues</li>
+                        </ul>
+                    </li>
                     <li><strong>v21</strong>
                         <ul style="margin-top:4px; padding-left:18px; font-size:14px;" class="version-sublist">
                             <li>Fixing Mobile Issues</li>
